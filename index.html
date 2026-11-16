@@ -18,25 +18,31 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
-    /* 1. Visionneuse principale (masque la bordure orange et la barre du bas) */
+    /* 1. Conteneur principal (cadrage identique à votre version) */
     .cadre-principal {
       position: fixed;
       top: -2px;
       left: -2px;
       width: calc(100% + 4px);
-      height: calc(100% + 38px); /* Cache la barre du bas */
+      height: calc(100% + 38px);
       overflow: hidden;
       z-index: 1;
     }
 
+    /* 2. Astuce HD : L'iframe est rendue en 2x (Retina) puis réduite à 50% pour une netteté maximale */
     .cadre-principal iframe {
-      width: 100%;
-      height: 100%;
+      width: 200%;
+      height: 200%;
+      transform: scale(0.5);
+      transform-origin: 0 0;
       border: none;
       display: block;
+      /* Amélioration du contraste des polices et contours */
+      image-rendering: -webkit-optimize-contrast;
+      filter: url(#filtre-nettete);
     }
 
-    /* 2. Conteneur en haut à droite pour le Plein Écran */
+    /* 3. Bouton Plein Écran en haut à droite */
     .barre-haut-droite {
       position: fixed;
       top: 12px;
@@ -69,7 +75,7 @@
       background: rgba(255, 255, 255, 0.2);
     }
 
-    /* 3. Petit bandeau d'aide discret qui disparaît au premier clic */
+    /* 4. Bandeau d'aide discret */
     .aide-clic {
       position: fixed;
       bottom: 16px;
@@ -88,7 +94,17 @@
 </head>
 <body>
 
-  <!-- Bouton Plein Écran tout en haut à droite -->
+  <!-- Filtre SVG invisible qui accentue légèrement la netteté des lettres -->
+  <svg width="0" height="0" style="position:absolute;">
+    <filter id="filtre-nettete">
+      <feConvolveMatrix order="3" preserveAlpha="true" kernelMatrix="
+         0   -0.15    0
+        -0.15  1.6  -0.15
+         0   -0.15    0"/>
+    </filter>
+  </svg>
+
+  <!-- Bouton Plein Écran -->
   <div class="barre-haut-droite">
     <button class="btn-fullscreen" id="btn-fullscreen" title="Plein écran">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -102,7 +118,7 @@
     Cliquez sur la diapositive puis utilisez les flèches du clavier ◀ ▶
   </div>
 
-  <!-- Visionneuse PowerPoint -->
+  <!-- Visionneuse PowerPoint HD -->
   <div class="cadre-principal">
     <iframe 
       id="visionneuse-ppt"
@@ -130,7 +146,7 @@
       }
     });
 
-    // Masquer le message d'aide dès que l'utilisateur clique dans la présentation
+    // Masquer le message d'aide au premier clic
     window.addEventListener("blur", () => {
       const aide = document.getElementById("aide-clic");
       if (aide) aide.style.opacity = "0";
